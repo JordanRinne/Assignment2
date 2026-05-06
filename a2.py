@@ -82,12 +82,20 @@ def run_error():
     return None
 
 
-def create_profile(user_input):
-    pass
+def create_profile():
+    print("First, let's create your profile.")
+    username = input("Username: ")
+    password = input("Password: ")
+    dsuserver = input("DsuServer: ")
+    #bio = input("Bio: ")
+    profile = Profile.Profile(username, password, dsuserver)
+    print("Profile created!")
+    return None
 
 
 def main():
     ans = " "
+    profile_exists = False
     while True:
         ans = input('Enter a command (Q to quit): ').split()
         if not ans:
@@ -96,7 +104,12 @@ def main():
         if ans[0].lower() == "q":
             break
         if ans[0] == "C":
-            create_file(ans[1:])
+            if profile_exists:
+                create_file(ans[1:])
+            else:
+                create_profile()
+                create_file(ans[1:])
+                profile_exists = True
         elif ans[0] == "D":
             delete_file(ans[1:])
         elif ans[0] == "R":
