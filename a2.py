@@ -83,7 +83,7 @@ def run_error():
 
 
 def create_profile():
-    print("First, let's create your profile.")
+    print("Let's Create Your Profile.")
     username = input("Username: ")
     password = input("Password: ")
     dsuserver = input("DsuServer: ")
@@ -93,9 +93,27 @@ def create_profile():
     return profile
 
 
+def check_profile(profile):
+
+    if profile is None:
+        print("No Profile Found.")
+        return False
+    
+    try:
+        print("Profile Information:")
+        print(f"Username: {profile.username}")
+        print(f"Password: {profile.password}")
+        print(f"DsuServer: {profile.dsuserver}")
+        print(f"Bio: {profile.bio}")
+        return True
+    except Exception as e:
+        print(f"Error occurred while checking profile: {e}")
+        return False
+
+
 def main():
     ans = " "
-    profile_exists = False
+    profile = None
     while True:
         ans = input('Enter a command (Q to quit): ').split()
         if not ans:
@@ -104,13 +122,15 @@ def main():
         if ans[0].lower() == "q":
             break
         if ans[0] == "C":
-            if profile_exists:
-                create_file(ans[1:])
+            
+            if check_profile(profile):
+                file_path = create_file(ans[1:])
+                profile.save_profile(str(file_path))
             else:
                 profile = create_profile()
                 file_path = create_file(ans[1:])
                 profile.save_profile(str(file_path))
-                profile_exists = True
+                
         elif ans[0] == "D":
             delete_file(ans[1:])
         elif ans[0] == "R":
@@ -119,6 +139,7 @@ def main():
             open_file(ans[1:])
         else:
             run_error()
+    check_profile(profile)
     return None
 
 
