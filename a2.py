@@ -2,7 +2,7 @@
 # jrinne@uci.edu
 # ID: 16935997
 
-import Profile
+import Profile as p
 import ui
 from pathlib import Path
 
@@ -19,7 +19,7 @@ def create_file(user_input):
     if user_input[0][-1] != "/":
         user_input[0] += "/"
     print(f"{user_input[0]}{user_input[2]}.dsu CREATED")
-    return None
+    return file_path
 
 
 def delete_file(user_input):
@@ -88,9 +88,9 @@ def create_profile():
     password = input("Password: ")
     dsuserver = input("DsuServer: ")
     #bio = input("Bio: ")
-    profile = Profile.Profile(username, password, dsuserver)
-    print("Profile created!")
-    return None
+    profile = p.Profile(dsuserver, username, password)
+    print(f"Profile for user '{profile.username}' created!")
+    return profile
 
 
 def main():
@@ -107,8 +107,9 @@ def main():
             if profile_exists:
                 create_file(ans[1:])
             else:
-                create_profile()
-                create_file(ans[1:])
+                profile = create_profile()
+                file_path = create_file(ans[1:])
+                profile.save_profile(str(file_path))
                 profile_exists = True
         elif ans[0] == "D":
             delete_file(ans[1:])
