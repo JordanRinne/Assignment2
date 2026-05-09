@@ -84,9 +84,21 @@ def open_file(user_input):
     if not FILE.is_file():
         run_error()
         return None
-    FILE.open()
-    print(f"{name} OPENED")
-    return None
+    
+    with FILE.open() as f:
+        try:
+            data = f.read()
+            if data == "":
+                print("EMPTY")
+                return None
+            else:
+                profile = p.Profile()
+                profile.load_profile(str(FILE))
+                print(f"{name} OPENED")
+                return profile, FILE
+        except Exception:
+            run_error()
+            return None
 
 
 def create_profile():
@@ -118,14 +130,6 @@ def check_profile(profile):
         run_error()
         return False
     
-"""
-def in_quotes(str:str):
-
-    if (str[0] == '"' or str[0] == "'") and (str[-1] == '"' or str[-1] == "'"):
-        return True
-    else:
-        return False
-"""
 
 def edit_profile(user_input, profile, path):
     
@@ -136,45 +140,52 @@ def edit_profile(user_input, profile, path):
         return None
     
     while len(user_input) > 1:
+
         if user_input[0] == "-usr" and " " not in user_input[1]:
             profile.username = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
+
         elif user_input[0] == "-pwd" and " " not in user_input[1]:
             profile.password = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
+
         elif user_input[0] == "-bio":
             profile.bio = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
+
         elif user_input[0] == "-addpost":
             post = p.Post(entry=user_input[1])
             profile.add_post(post)
             profile.save_profile(path)
             user_input = user_input[2:]
+
         elif user_input[0] == "-delpost":
             try:
                 index = int(user_input[1])
-                profile.del_post(index)
+                if not profile.del_post(index):
+                    run_error()
+                    return None
                 profile.save_profile(path)
                 user_input = user_input[2:]
             except ValueError:
                 run_error()
                 return None
+        
         else:
             run_error()
             return None
-                                  
-    
     return None
 
 
 def admin_mode():
     ans = " "
     profile = None
-    while True:
+    file_path = None
 
+    while True:
         try:
             ans = parse(input('Enter a command (Q to quit): '))
         except Exception:
@@ -197,20 +208,19 @@ def admin_mode():
         elif ans[0] == "R":
             read_file(ans[1:])
         elif ans[0] == "O":
-            open_file(ans[1:])
 
+            result = open_file(ans[1:])
+            if result is not None:
+                profile, file_path = result
 
         elif ans[0] == "E":
-            
             try:
                 edit_profile(ans[1:], profile, file_path)
             except Exception as e:
-                print(f"Error occurred while editing profile: {e}")
-
+                run_error()
         else:
             run_error()
 
-    
     return None
 
 
