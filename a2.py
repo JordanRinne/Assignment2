@@ -5,12 +5,13 @@
 import ui
 
 def main():
-    start = input()
     
+    start = input("Enter a command: ")
+
     if start == "admin":
         ui.admin_mode()
     else:
-        ui.ui(start)
+        ui.main_ui(start)
 
     return None
 
