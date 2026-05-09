@@ -11,6 +11,7 @@
 
 import Profile as p
 from pathlib import Path
+from shlex import split as parse
 
 
 def run_error():
@@ -89,40 +90,42 @@ def open_file(user_input):
 
 
 def create_profile():
-    print("Let's Create Your Profile.")
+
+    dsuserver = input("DsuServer: ")
     username = input("Username: ")
     password = input("Password: ")
-    dsuserver = input("DsuServer: ")
-    #bio = input("Bio: ")
+    bio = input("Bio: ")
+
     profile = p.Profile(dsuserver, username, password)
-    print(f"Profile for user '{profile.username}' created!")
+    profile.bio = bio
+    print(f"Profile for user '{profile.username}' created")
     return profile
 
 
 def check_profile(profile):
 
     if profile is None:
-        print("No Profile Found.")
+        run_error()
         return False
     
     try:
-        print("Profile Information:")
+        print(f"DsuServer: {profile.dsuserver}")
         print(f"Username: {profile.username}")
         print(f"Password: {profile.password}")
-        print(f"DsuServer: {profile.dsuserver}")
         print(f"Bio: {profile.bio}")
         return True
     except Exception as e:
-        print(f"Error occurred while checking profile: {e}")
+        run_error()
         return False
     
-
+"""
 def in_quotes(str:str):
 
     if (str[0] == '"' or str[0] == "'") and (str[-1] == '"' or str[-1] == "'"):
         return True
     else:
         return False
+"""
 
 def edit_profile(user_input, profile, path):
     
@@ -133,31 +136,34 @@ def edit_profile(user_input, profile, path):
         return None
     
     while len(user_input) > 1:
-        if user_input[0] == "-usr" and in_quotes(user_input[1]) and " " not in user_input[1]:
-            profile.username = user_input[1][1:-1]
+        if user_input[0] == "-usr" and " " not in user_input[1]:
+            profile.username = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
-        elif user_input[0] == "-pwd" and in_quotes(user_input[1]) and " " not in user_input[1]:
-            profile.password = user_input[1][1:-1]
+        elif user_input[0] == "-pwd" and " " not in user_input[1]:
+            profile.password = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
-        elif user_input[0] == "-bio" and in_quotes(user_input[1]):
-            profile.bio = user_input[1][1:-1]
+        elif user_input[0] == "-bio":
+            profile.bio = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
-        elif user_input[0] == "-addpost" and in_quotes(user_input[1]):
-            profile.add_post(user_input[1][1:-1])
+        elif user_input[0] == "-addpost":
+            profile.add_post(user_input[1])
             profile.save_profile(path)
             user_input = user_input[2:]
-        elif user_input[0] == "-delpost" and in_quotes(user_input[1]):
+        elif user_input[0] == "-delpost":
             try:
-                index = int(user_input[1][1:-1])
+                index = int(user_input[1])
                 profile.delete_post(index)
                 profile.save_profile(path)
                 user_input = user_input[2:]
             except ValueError:
                 run_error()
                 return None
+        else:
+            run_error()
+            return None
                                   
     
     return None
@@ -167,7 +173,13 @@ def admin_mode():
     ans = " "
     profile = None
     while True:
-        ans = input('Enter a command (Q to quit): ').split()
+
+        try:
+            ans = parse(input('Enter a command (Q to quit): '))
+        except Exception:
+            run_error()
+            continue
+
         if not ans:
             run_error()
             continue
@@ -175,13 +187,9 @@ def admin_mode():
             break
         if ans[0] == "C":
 
-            if check_profile(profile):
-                file_path = create_file(ans[1:])
-                profile.save_profile(str(file_path))
-            else:
-                profile = create_profile()
-                file_path = create_file(ans[1:])
-                profile.save_profile(str(file_path))
+            profile = create_profile()
+            file_path = create_file(ans[1:])
+            profile.save_profile(str(file_path))
                 
         elif ans[0] == "D":
             delete_file(ans[1:])
@@ -190,16 +198,18 @@ def admin_mode():
         elif ans[0] == "O":
             open_file(ans[1:])
 
+
         elif ans[0] == "E":
 
-            if check_profile(profile):
+            try:
                 edit_profile(ans[1:], profile, file_path)
-            else:
-                print("No profile to edit.")
+            except Exception as e:
+                print(f"Error occurred while editing profile: {e}")
 
         else:
             run_error()
-    check_profile(profile)
+
+    
     return None
 
 
