@@ -126,21 +126,39 @@ def in_quotes(str:str):
 
 def edit_profile(user_input, profile, path):
     
-    #commands = ["-usr", "-pwd", "-bio", "-addpost", "-delpost, -all"]
+    #commands = ["-usr", "-pwd", "-bio", "-addpost", "-delpost"]
 
     if len(user_input) < 2:
         run_error()
         return None
     
     while len(user_input) > 1:
-        if user_input[0] == "-usr" and in_quotes(user_input[1]):
+        if user_input[0] == "-usr" and in_quotes(user_input[1]) and " " not in user_input[1]:
             profile.username = user_input[1][1:-1]
             profile.save_profile(path)
             user_input = user_input[2:]
-        elif user_input[0] == "-pwd" and in_quotes(user_input[1]):
+        elif user_input[0] == "-pwd" and in_quotes(user_input[1]) and " " not in user_input[1]:
             profile.password = user_input[1][1:-1]
             profile.save_profile(path)
             user_input = user_input[2:]
+        elif user_input[0] == "-bio" and in_quotes(user_input[1]):
+            profile.bio = user_input[1][1:-1]
+            profile.save_profile(path)
+            user_input = user_input[2:]
+        elif user_input[0] == "-addpost" and in_quotes(user_input[1]):
+            profile.add_post(user_input[1][1:-1])
+            profile.save_profile(path)
+            user_input = user_input[2:]
+        elif user_input[0] == "-delpost" and in_quotes(user_input[1]):
+            try:
+                index = int(user_input[1][1:-1])
+                profile.delete_post(index)
+                profile.save_profile(path)
+                user_input = user_input[2:]
+            except ValueError:
+                run_error()
+                return None
+                                  
     
     return None
 
