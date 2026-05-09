@@ -180,6 +180,55 @@ def edit_profile(user_input, profile, path):
     return None
 
 
+def print_profile(user_input, profile):
+
+    if len(user_input) < 1:
+        run_error()
+        return None
+    
+    while len(user_input) > 0:
+    
+        if user_input[0] == "-all":
+            if not check_profile(profile):
+                return None
+            posts = profile.get_posts()
+            for i, post in enumerate(posts):
+                print(f"Post {i}: {post.entry} (timestamp: {post.timestamp})")
+            user_input = user_input[1:]
+
+        elif user_input[0] == "-usr":
+            print(f"Username: {profile.username}")
+            user_input = user_input[1:]
+
+        elif user_input[0] == "-pwd":
+            print(f"Password: {profile.password}")
+            user_input = user_input[1:]
+
+        elif user_input[0] == "-bio":
+            print(f"Bio: {profile.bio}")
+            user_input = user_input[1:]
+
+        elif user_input[0] == "-posts":
+            posts = profile.get_posts()
+            for i, post in enumerate(posts):
+                print(f"Post {i}: {post.entry} (timestamp: {post.timestamp})")
+            user_input = user_input[1:]
+
+        elif user_input[0] == "-post" and user_input[1].isdigit():
+            index = int(user_input[1])
+            posts = profile.get_posts()
+            post = posts[index] if 0 <= index < len(posts) else None
+            if post is None:
+                run_error()
+                return None
+            print(f"Post {index}: {post.entry} (timestamp: {post.timestamp})")
+            user_input = user_input[2:]
+
+        else:
+            run_error()
+            return None
+
+
 def admin_mode():
     ans = " "
     profile = None
@@ -197,18 +246,19 @@ def admin_mode():
             continue
         if ans[0].lower() == "q":
             break
-        if ans[0] == "C":
 
+        if ans[0] == "C":
             profile = create_profile()
             file_path = create_file(ans[1:])
             profile.save_profile(str(file_path))
                 
         elif ans[0] == "D":
             delete_file(ans[1:])
+
         elif ans[0] == "R":
             read_file(ans[1:])
-        elif ans[0] == "O":
 
+        elif ans[0] == "O":
             result = open_file(ans[1:])
             if result is not None:
                 profile, file_path = result
@@ -218,6 +268,10 @@ def admin_mode():
                 edit_profile(ans[1:], profile, file_path)
             except Exception as e:
                 run_error()
+
+        elif ans[0] == "P":
+            print_profile(ans[1:], profile)
+            
         else:
             run_error()
 
