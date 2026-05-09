@@ -149,13 +149,14 @@ def edit_profile(user_input, profile, path):
             profile.save_profile(path)
             user_input = user_input[2:]
         elif user_input[0] == "-addpost":
-            profile.add_post(user_input[1])
+            post = p.Post(entry=user_input[1])
+            profile.add_post(post)
             profile.save_profile(path)
             user_input = user_input[2:]
         elif user_input[0] == "-delpost":
             try:
                 index = int(user_input[1])
-                profile.delete_post(index)
+                profile.del_post(index)
                 profile.save_profile(path)
                 user_input = user_input[2:]
             except ValueError:
@@ -200,7 +201,7 @@ def admin_mode():
 
 
         elif ans[0] == "E":
-
+            
             try:
                 edit_profile(ans[1:], profile, file_path)
             except Exception as e:
