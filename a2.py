@@ -6,7 +6,8 @@ import ui
 
 def main():
     
-    start = input("Enter a command: ")
+    print("Welcome to the DSU Profile Manager!")
+    start = input("Enter a command to get started, or 'help' for a list of commands: ")
 
     if start == "admin":
         ui.admin_mode()

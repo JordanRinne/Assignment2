@@ -157,7 +157,18 @@ def check_profile(profile, friendly=True):
 
 def edit_profile(user_input, profile, path, friendly=True):
     
-    #commands = ["-usr", "-pwd", "-bio", "-addpost", "-delpost"]
+    if user_input == ["help"]:
+        print("Available edit commands:")
+        print("-usr <new_username>: Edit the username of the profile.")
+        print("-pwd <new_password>: Edit the password of the profile.")
+        print("-bio <new_bio>: Edit the bio of the profile.")
+        print("-addpost <post_entry>: Add a new post with the specified entry to the profile.")
+        print("-delpost <post_index>: Delete the post at the specified index from the profile.")
+        return None
+
+    if profile is None:
+        run_error()
+        return None
 
     if len(user_input) < 2:
         run_error()
@@ -205,6 +216,16 @@ def edit_profile(user_input, profile, path, friendly=True):
 
 
 def print_profile(user_input, profile, friendly=True):
+
+    if user_input == ["help"]:
+        print("Available print commands:")
+        print("-all: Print all profile information, including username, password, bio, and all posts.")
+        print("-usr: Print the username of the profile.")
+        print("-pwd: Print the password of the profile.")
+        print("-bio: Print the bio of the profile.")
+        print("-posts: Print all posts in the profile.")
+        print("-post <index>: Print the post at the specified index in the profile.")
+        return None
 
     if profile is None:
         run_error()
@@ -256,6 +277,16 @@ def print_profile(user_input, profile, friendly=True):
             run_error()
             return None
 
+def help():
+    print("Available commands:")
+    print("C <directory> -n <filename>: Create a new .dsu file in the specified directory with the specified filename.")
+    print("D <filename.dsu>: Delete the specified .dsu file.")
+    print("R <filename.dsu>: Read and display the contents of the specified .dsu file.")
+    print("O <filename.dsu>: Open the specified .dsu file and load its contents into a profile.")
+    print("E <edit commands>: Edit the currently loaded profile using the specified edit commands. Enter 'E help' for a list of edit commands.")
+    print("P <print commands>: Print information from the currently loaded profile using the specified print commands. Enter 'P help' for a list of print commands.")
+    print("Q: Quit the program.")
+    return None
 
 def admin_mode():
     ans = " "
@@ -309,6 +340,9 @@ def admin_mode():
 
         elif ans[0] == "P":
             print_profile(ans[1:], profile)
+        
+        elif ans[0] == "help":
+            help()
             
         else:
             run_error(friendly=False)
