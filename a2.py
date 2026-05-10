@@ -5,9 +5,9 @@
 import ui
 
 def main():
-    
+
     print("Welcome to the DSU Profile Manager!")
-    start = input("Enter a command to get started, or 'help' for a list of commands: ")
+    start = input("To get started, would you like to create a new profile or load an existing one? (new/load): ").strip().lower()
 
     if start == "admin":
         ui.admin_mode()
@@ -18,4 +18,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    print("Goodbye!")
+    
