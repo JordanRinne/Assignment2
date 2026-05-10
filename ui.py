@@ -37,7 +37,7 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
 
 def create_file(user_input, friendly=True):
     if len(user_input) != 3 or user_input[1] != "-n":
-        run_error()
+        run_error(friendly=friendly)
         return None
     directory = user_input[0]
     filename = user_input[2]
@@ -49,7 +49,7 @@ def create_file(user_input, friendly=True):
         file_path.parent.mkdir(parents=True, exist_ok=True)
         file_path.touch(exist_ok=True)
     except Exception:
-        run_error()
+        run_error(friendly=friendly)
         return None
     
     if user_input[0][-1] != "/":
@@ -60,15 +60,15 @@ def create_file(user_input, friendly=True):
 
 def delete_file(user_input, friendly=True):
     if len(user_input) != 1:
-        run_error()
+        run_error(friendly=friendly)
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error()
+        run_error(friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
-        run_error()
+        run_error(friendly=friendly)
         return None
     FILE.unlink()
     print(f"{name} DELETED")
@@ -77,15 +77,15 @@ def delete_file(user_input, friendly=True):
 
 def read_file(user_input, friendly=True):
     if len(user_input) != 1:
-        run_error()
+        run_error(friendly=friendly)
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error()
+        run_error(friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
-        run_error()
+        run_error(friendly=friendly)
         return None
     with FILE.open() as f:
         if f.read() == "":
@@ -98,22 +98,22 @@ def read_file(user_input, friendly=True):
 
 def open_file(user_input, friendly=True):
     if len(user_input) != 1:
-        run_error()
+        run_error(friendly=friendly)
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error()
+        run_error(friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
-        run_error()
+        run_error(friendly=friendly)
         return None
     
     with FILE.open() as f:
         try:
             data = f.read()
             if data == "":
-                run_error()
+                run_error(friendly=friendly)
                 return None
             else:
                 profile = p.Profile()
@@ -121,11 +121,11 @@ def open_file(user_input, friendly=True):
                 print(f"{name} OPENED")
                 return profile, FILE
         except Exception:
-            run_error()
+            run_error(friendly=friendly)
             return None
 
 
-def create_profile():
+def create_profile(friendly=True):
 
     dsuserver = input("DsuServer: ")
     username = input("Username: ")
@@ -141,7 +141,7 @@ def create_profile():
 def check_profile(profile, friendly=True):
 
     if profile is None:
-        run_error()
+        run_error(friendly=friendly)
         return False
     
     try:
@@ -151,7 +151,7 @@ def check_profile(profile, friendly=True):
         print(f"Bio: {profile.bio}")
         return True
     except Exception as e:
-        run_error()
+        run_error(friendly=friendly)
         return False
     
 
@@ -167,11 +167,11 @@ def edit_profile(user_input, profile, path, friendly=True):
         return None
 
     if profile is None:
-        run_error()
+        run_error(friendly=friendly)
         return None
 
     if len(user_input) < 2:
-        run_error()
+        run_error(friendly=friendly)
         return None
     
     while len(user_input) > 1:
@@ -201,16 +201,16 @@ def edit_profile(user_input, profile, path, friendly=True):
             try:
                 index = int(user_input[1])
                 if not profile.del_post(index):
-                    run_error()
+                    run_error(friendly=friendly)
                     return None
                 profile.save_profile(path)
                 user_input = user_input[2:]
             except ValueError:
-                run_error()
+                run_error(friendly=friendly)
                 return None
         
         else:
-            run_error()
+            run_error(friendly=friendly)
             return None
     return None
 
@@ -228,11 +228,11 @@ def print_profile(user_input, profile, friendly=True):
         return None
 
     if profile is None:
-        run_error()
+        run_error(friendly=friendly)
         return None
 
     if len(user_input) < 1:
-        run_error()
+        run_error(friendly=friendly)
         return None
     
     while len(user_input) > 0:
@@ -268,13 +268,13 @@ def print_profile(user_input, profile, friendly=True):
             posts = profile.get_posts()
             post = posts[index] if 0 <= index < len(posts) else None
             if post is None:
-                run_error()
+                run_error(friendly=friendly)
                 return None
             print(f"Post {index}: {post.entry} (timestamp: {post.timestamp})")
             user_input = user_input[2:]
 
         else:
-            run_error()
+            run_error(friendly=friendly)
             return None
 
 def help():
@@ -287,6 +287,7 @@ def help():
     print("P <print commands>: Print information from the currently loaded profile using the specified print commands. Enter 'P help' for a list of print commands.")
     print("Q: Quit the program.")
     return None
+
 
 def admin_mode():
     ans = " "
@@ -307,7 +308,7 @@ def admin_mode():
             break
 
         if ans[0] == "C":
-            result = create_file(ans[1:])
+            result = create_file(ans[1:], friendly=False)
             if result is None:
                 continue
             file_path, exists = result
@@ -322,24 +323,24 @@ def admin_mode():
                     run_error(friendly=False)
                 
         elif ans[0] == "D":
-            delete_file(ans[1:])
+            delete_file(ans[1:], friendly=False)
 
         elif ans[0] == "R":
-            read_file(ans[1:])
+            read_file(ans[1:], friendly=False)
 
         elif ans[0] == "O":
-            result = open_file(ans[1:])
+            result = open_file(ans[1:], friendly=False)
             if result is not None:
                 profile, file_path = result
 
         elif ans[0] == "E":
             try:
-                edit_profile(ans[1:], profile, file_path)
+                edit_profile(ans[1:], profile, file_path, friendly=False)
             except Exception as e:
                 run_error(friendly=False)
 
         elif ans[0] == "P":
-            print_profile(ans[1:], profile)
+            print_profile(ans[1:], profile, friendly=False)
         
         elif ans[0] == "help":
             help()
