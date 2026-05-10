@@ -97,7 +97,7 @@ def open_file(user_input):
         try:
             data = f.read()
             if data == "":
-                print("EMPTY")
+                run_error()
                 return None
             else:
                 profile = p.Profile()
@@ -190,6 +190,10 @@ def edit_profile(user_input, profile, path):
 
 def print_profile(user_input, profile):
 
+    if profile is None:
+        run_error()
+        return None
+
     if len(user_input) < 1:
         run_error()
         return None
@@ -222,7 +226,7 @@ def print_profile(user_input, profile):
                 print(f"Post {i}: {post.entry} (timestamp: {post.timestamp})")
             user_input = user_input[1:]
 
-        elif user_input[0] == "-post" and user_input[1].isdigit():
+        elif user_input[0] == "-post" and len(user_input) >= 2 and user_input[1].isdigit():
             index = int(user_input[1])
             posts = profile.get_posts()
             post = posts[index] if 0 <= index < len(posts) else None
