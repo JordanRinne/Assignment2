@@ -12,7 +12,7 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
     if not friendly:
         print("ERROR")
         return None
-    
+
     messages = {
         "INVALID COMMAND": "Invalid Command. Use 'C' to create a file, 'D' to delete a file, 'R' to read a file, 'O' to open a file, 'E' to edit a profile, or 'P' to print profile information.",
         "INVALID COMMAND (E)": "Invalid Edit Command. Use '-usr' to edit username, '-pwd' to edit password, '-bio' to edit bio, '-addpost' to add a post, or '-delpost' to delete a post.",
@@ -50,7 +50,7 @@ def create_file(user_input, friendly=True):
     except Exception:
         run_error("PATH ERROR", friendly=friendly)
         return None
-    
+
     if user_input[0][-1] != "/":
         user_input[0] += "/"
     print(f"{user_input[0]}{user_input[2]}.dsu CREATED")
@@ -107,7 +107,7 @@ def open_file(user_input, friendly=True):
     if not FILE.is_file():
         run_error("PATH ERROR", friendly=friendly)
         return None
-    
+
     with FILE.open() as f:
         try:
             data = f.read()
@@ -140,7 +140,6 @@ def create_profile(friendly=True):
 
     profile = p.Profile(dsuserver, username, password)
     profile.bio = bio
-    
     return profile
 
 
@@ -149,7 +148,7 @@ def check_profile(profile, friendly=True):
     if profile is None:
         run_error("PROFILE ERROR", friendly=friendly)
         return False
-    
+
     try:
         print(f"DsuServer: {profile.dsuserver}")
         print(f"Username: {profile.username}")
@@ -159,10 +158,10 @@ def check_profile(profile, friendly=True):
     except Exception as e:
         run_error("PROFILE ERROR", friendly=friendly)
         return False
-    
+
 
 def edit_profile(user_input, profile, path, friendly=True):
-    
+
     if user_input == ["help"]:
         print("Available edit commands:")
         print("-usr <new_username>: Edit the username of the profile.")
@@ -179,7 +178,7 @@ def edit_profile(user_input, profile, path, friendly=True):
     if len(user_input) < 2:
         run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
-    
+
     while len(user_input) > 1:
 
         if user_input[0] == "-usr" and " " not in user_input[1]:
@@ -214,7 +213,7 @@ def edit_profile(user_input, profile, path, friendly=True):
             except ValueError:
                 run_error("INVALID INDEX", friendly=friendly)
                 return None
-        
+
         else:
             run_error("INVALID COMMAND (E)", friendly=friendly)
             return None
@@ -240,9 +239,9 @@ def print_profile(user_input, profile, friendly=True):
     if len(user_input) < 1:
         run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
-    
+
     while len(user_input) > 0:
-    
+
         if user_input[0] == "-all":
             if not check_profile(profile, friendly=friendly):
                 return None
@@ -330,7 +329,7 @@ def admin_mode():
                     profile.load_profile(str(file_path))
                 except Exception:
                     run_error(friendly=False)
-                
+
         elif ans[0] == "D":
             delete_file(ans[1:], friendly=False)
 
@@ -350,10 +349,10 @@ def admin_mode():
 
         elif ans[0] == "P":
             print_profile(ans[1:], profile, friendly=False)
-        
+
         elif ans[0] == "help":
             print_help()
-            
+
         else:
             run_error(friendly=False)
 
@@ -365,7 +364,7 @@ def main_ui(start):
 
     ans = parse(start)
     quit = False
-    
+
     while True:
         if not ans:
             ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile (or Q to quit): "))
@@ -380,7 +379,7 @@ def main_ui(start):
             result = create_file(ans)
             if result is None:
                 continue
-        
+
             print(f"Enter the following information to create the profile '{name}':")
             file_path, exists = result
             if not exists:
@@ -417,7 +416,7 @@ def main_ui(start):
             return None
         else:
             ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: (or Q to quit): "))
-    
+
     while True and not quit:
         print()
         print("Create another profile (type C)")
@@ -443,7 +442,7 @@ def main_ui(start):
             result = create_file(ans)
             if result is None:
                 continue
-        
+
             print(f"Enter the following information to create the profile '{name}':")
             file_path, exists = result
             if not exists:
@@ -469,7 +468,7 @@ def main_ui(start):
                 profile, file_path = result
                 print(f"Profile '{name}' loaded successfully.")
                 print()
-            
+
         elif ans.lower() == "d":
             name = input("Enter the name of the profile you would like to delete (without .dsu extension): ")
             file_path = input("Enter the directory path where the profile is located: ")
