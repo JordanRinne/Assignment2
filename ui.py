@@ -257,14 +257,18 @@ def admin_mode():
 
         if ans[0] == "C":
             result = create_file(ans[1:])
+            if result is None:
+                continue
             file_path, exists = result
-            if exists is False:
+            if not exists:
                 profile = create_profile()
                 profile.save_profile(str(file_path))
-            if exists is True:
-                profile = p.Profile()
-                profile.load_profile(str(file_path))
-                
+            if exists:
+                try:
+                    profile = p.Profile()
+                    profile.load_profile(str(file_path))
+                except Exception:
+                    run_error()
                 
         elif ans[0] == "D":
             delete_file(ans[1:])
