@@ -26,12 +26,20 @@ def create_file(user_input):
     directory = user_input[0]
     filename = user_input[2]
     file_path = Path(directory).expanduser() / f"{filename}.dsu"
-    file_path.parent.mkdir(parents=True, exist_ok=True)
-    file_path.touch(exist_ok=True)
+    if file_path.exists():
+        return file_path, True
+
+    try:
+        file_path.parent.mkdir(parents=True, exist_ok=True)
+        file_path.touch(exist_ok=True)
+    except Exception:
+        run_error()
+        return None
+    
     if user_input[0][-1] != "/":
         user_input[0] += "/"
     print(f"{user_input[0]}{user_input[2]}.dsu CREATED")
-    return file_path
+    return file_path, False
 
 
 def delete_file(user_input):
@@ -248,9 +256,15 @@ def admin_mode():
             break
 
         if ans[0] == "C":
-            profile = create_profile()
-            file_path = create_file(ans[1:])
-            profile.save_profile(str(file_path))
+            result = create_file(ans[1:])
+            file_path, exists = result
+            if exists is False:
+                profile = create_profile()
+                profile.save_profile(str(file_path))
+            if exists is True:
+                profile = p.Profile()
+                profile.load_profile(str(file_path))
+                
                 
         elif ans[0] == "D":
             delete_file(ans[1:])
