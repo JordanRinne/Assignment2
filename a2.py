@@ -18,4 +18,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+    print("Okay, Hope you enjoyed using the program! Goodbye, and have a great day!")
+    print()
     

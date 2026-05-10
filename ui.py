@@ -1,9 +1,3 @@
-# ui.py
-
-# Starter code for assignment 2 in ICS 32 Programming with Software Libraries in Python
-
-# Replace the following placeholders with your information.
-
 # Jordan Rinne
 # jrinne@uci.edu
 # 16935997
@@ -30,6 +24,7 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
         "INVALID USR/PWD": "Invalid Username or Password. Usernames and passwords cannot contain spaces.",
         "EMPTY PARAM": "Empty Parameter. Each profile must have a non-empty DsuServer, Username, and Password.",
         "INVALID INDEX": "Invalid Index. Ensure that the index you provided is a valid integer and corresponds to an existing post.",
+        "EMPTY FILE": "Empty File. The file you are trying to open is empty and cannot be loaded as a profile."
     }
 
     if error_type in messages:
@@ -249,7 +244,7 @@ def print_profile(user_input, profile, friendly=True):
     while len(user_input) > 0:
     
         if user_input[0] == "-all":
-            if not check_profile(profile):
+            if not check_profile(profile, friendly=friendly):
                 return None
             posts = profile.get_posts()
             for i, post in enumerate(posts):
@@ -288,7 +283,7 @@ def print_profile(user_input, profile, friendly=True):
             run_error("INVALID COMMAND (P)", friendly=friendly)
             return None
 
-def help():
+def print_help():
     print("Available commands:")
     print("C <directory> -n <filename>: Create a new .dsu file in the specified directory with the specified filename.")
     print("D <filename.dsu>: Delete the specified .dsu file.")
@@ -324,7 +319,10 @@ def admin_mode():
                 continue
             file_path, exists = result
             if not exists:
-                profile = create_profile()
+                profile = create_profile(friendly=False)
+                if profile is None:
+                    delete_file([str(file_path)], friendly=False)
+                    continue
                 profile.save_profile(str(file_path))
             if exists:
                 try:
@@ -354,7 +352,7 @@ def admin_mode():
             print_profile(ans[1:], profile, friendly=False)
         
         elif ans[0] == "help":
-            help()
+            print_help()
             
         else:
             run_error(friendly=False)
@@ -366,7 +364,12 @@ def admin_mode():
 def main_ui(start):
 
     ans = parse(start)
+    quit = False
+    
     while True:
+        if not ans:
+            ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile (or Q to quit): "))
+            continue
         if ans[0] == "new":
             name = input("What name would you like to give the profile? (without .dsu extension): ")
             file_path = input("Where would you like to save the profile? (Enter the directory path): ")
@@ -408,10 +411,14 @@ def main_ui(start):
                 print()
                 print("Now that you have loaded your profile, you can use any of the following actions:")
                 break
+        elif ans[0].lower() == "q":
+            print()
+            quit = True
+            return None
         else:
-            ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: "))
+            ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: (or Q to quit): "))
     
-    while True:
+    while True and not quit:
         print()
         print("Create another profile (type C)")
         print("Load an existing profile (type O)")
@@ -425,7 +432,6 @@ def main_ui(start):
 
         if ans.lower() == "q":
             print()
-            print("Okay, Hope you enjoyed using the program! Goodbye, and have a great day!")
             break
         elif ans.lower() == "c":
             name = input("What name would you like to give the profile? (without .dsu extension): ")
@@ -494,9 +500,8 @@ def main_ui(start):
                 run_error("INVALID COMMAND (E)")
                 continue
             edit_input = input("Enter the new Profile information: ")
-            ans = edit_command + " " + edit_input
-            edit_profile(parse(ans), profile, file_path)
-            print("Profile edited successfully. Use the P command to view the updated profile information.")
+            edit_profile([edit_command, edit_input], profile, file_path)
+            print("Use the P command to view any updated profile information.")
 
         elif ans.lower() == "p":
             print_command = input("Enter a print command (type 'P help' for a list of possible commands): ")
@@ -516,6 +521,9 @@ def main_ui(start):
                     print_profile(["-post", index_str], profile)
                 else:
                     run_error("INVALID INDEX")
+            else:
+                run_error("INVALID COMMAND (P)")
+                continue
         else:
             run_error("INVALID COMMAND")
 
