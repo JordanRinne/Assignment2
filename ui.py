@@ -424,7 +424,8 @@ def main_ui(start):
         ans = input("What would you like to do? ")
 
         if ans.lower() == "q":
-            print("Okay, Hope you enjoyed using the program! Goodbye!")
+            print()
+            print("Okay, Hope you enjoyed using the program! Goodbye, and have a great day!")
             break
         elif ans.lower() == "c":
             name = input("What name would you like to give the profile? (without .dsu extension): ")
@@ -474,9 +475,47 @@ def main_ui(start):
             ans = [file_path + "/" + name + ".dsu"]
             read_file(ans)
         elif ans.lower() == "e":
-            pass
+            edit_command = input("Enter an edit command (type 'E help' for a list of possible commands): ")
+            if not edit_command:
+                run_error("INPUT NUMBER ERROR")
+                continue
+            if edit_command == "E help":
+                print()
+                edit_profile(["help"], profile, file_path)
+                continue
+            if edit_command == "-delpost":
+                index_str = input("Enter the index of the post you would like to delete: ")
+                if index_str.isdigit():
+                    edit_profile(["-delpost", index_str], profile, file_path)
+                else:
+                    run_error("INVALID INDEX")
+                continue
+            if edit_command not in ["-usr", "-pwd", "-bio", "-addpost"]:
+                run_error("INVALID COMMAND (E)")
+                continue
+            edit_input = input("Enter the new Profile information: ")
+            ans = edit_command + " " + edit_input
+            edit_profile(parse(ans), profile, file_path)
+            print("Profile edited successfully. Use the P command to view the updated profile information.")
+
         elif ans.lower() == "p":
-            pass
+            print_command = input("Enter a print command (type 'P help' for a list of possible commands): ")
+            if not print_command:
+                run_error("INPUT NUMBER ERROR")
+                continue
+            if print_command == "P help":
+                print()
+                print_profile(["help"], profile)
+                continue
+            if print_command in ["-all", "-usr", "-pwd", "-bio", "-posts"]:
+                print()
+                print_profile([print_command], profile)
+            elif print_command.startswith("-post "):
+                index_str = print_command[6:].strip()
+                if index_str.isdigit():
+                    print_profile(["-post", index_str], profile)
+                else:
+                    run_error("INVALID INDEX")
         else:
             run_error("INVALID COMMAND")
 
