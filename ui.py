@@ -20,15 +20,16 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
         return None
     
     messages = {
-        "INVALID COMMAND": "Invalid Command. Use 'C' to create a file, 'D' to delete a file, 'R' to read a file, 'O' to open a file, 'E' to edit a profile, and 'P' to print profile information.",
-        "INVALID COMMAND (E)": "Invalid Edit Command. Use '-usr' to edit username, '-pwd' to edit password, '-bio' to edit bio, '-addpost' to add a post, and '-delpost' to delete a post.",
-        "INVALID COMMAND (P)": "Invalid Print Command. Use '-all' to print all profile information, '-usr' to print username, '-pwd' to print password, '-bio' to print bio, '-posts' to print all posts, and '-post <index>' to print a specific post.",
+        "INVALID COMMAND": "Invalid Command. Use 'C' to create a file, 'D' to delete a file, 'R' to read a file, 'O' to open a file, 'E' to edit a profile, or 'P' to print profile information.",
+        "INVALID COMMAND (E)": "Invalid Edit Command. Use '-usr' to edit username, '-pwd' to edit password, '-bio' to edit bio, '-addpost' to add a post, or '-delpost' to delete a post.",
+        "INVALID COMMAND (P)": "Invalid Print Command. Use '-all' to print all profile information, '-usr' to print username, '-pwd' to print password, '-bio' to print bio, '-posts' to print all posts, or '-post <index>' to print a specific post.",
         "INPUT NUMBER ERROR": "Input Number Error. Ensure that you are providing the correct number of arguments for the command.",
         "PATH ERROR": "Path Error. Ensure that the file path you provided is valid and that you have the necessary permissions to access it.",
         "FILE ERROR": "File Error. Ensure that the file you are trying to access exists and is a valid .dsu file.",
         "PROFILE ERROR": "Profile Error. Ensure that the profile you are trying to access is valid and that you have the necessary permissions to access it.",
         "INVALID USR/PWD": "Invalid Username or Password. Usernames and passwords cannot contain spaces.",
         "EMPTY PARAM": "Empty Parameter. Each profile must have a non-empty DsuServer, Username, and Password.",
+        "INVALID INDEX": "Invalid Index. Ensure that the index you provided is a valid integer and corresponds to an existing post.",
     }
 
     if error_type in messages:
@@ -63,15 +64,15 @@ def create_file(user_input, friendly=True):
 
 def delete_file(user_input, friendly=True):
     if len(user_input) != 1:
-        run_error(friendly=friendly)
+        run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error(friendly=friendly)
+        run_error("FILE ERROR", friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
-        run_error(friendly=friendly)
+        run_error("FILE ERROR", friendly=friendly)
         return None
     FILE.unlink()
     print(f"{name} DELETED")
@@ -80,15 +81,15 @@ def delete_file(user_input, friendly=True):
 
 def read_file(user_input, friendly=True):
     if len(user_input) != 1:
-        run_error(friendly=friendly)
+        run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error(friendly=friendly)
+        run_error("FILE ERROR", friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
-        run_error(friendly=friendly)
+        run_error("FILE ERROR", friendly=friendly)
         return None
     with FILE.open() as f:
         if f.read() == "":
@@ -105,7 +106,7 @@ def open_file(user_input, friendly=True):
         return None
     name = user_input[0]
     if name[-4:] != ".dsu":
-        run_error(friendly=friendly)
+        run_error("FILE ERROR", friendly=friendly)
         return None
     FILE = Path(name).expanduser()
     if not FILE.is_file():
@@ -151,7 +152,7 @@ def create_profile(friendly=True):
 def check_profile(profile, friendly=True):
 
     if profile is None:
-        run_error(friendly=friendly)
+        run_error("PROFILE ERROR", friendly=friendly)
         return False
     
     try:
@@ -161,7 +162,7 @@ def check_profile(profile, friendly=True):
         print(f"Bio: {profile.bio}")
         return True
     except Exception as e:
-        run_error(friendly=friendly)
+        run_error("PROFILE ERROR", friendly=friendly)
         return False
     
 
@@ -177,11 +178,11 @@ def edit_profile(user_input, profile, path, friendly=True):
         return None
 
     if profile is None:
-        run_error(friendly=friendly)
+        run_error("PROFILE ERROR", friendly=friendly)
         return None
 
     if len(user_input) < 2:
-        run_error(friendly=friendly)
+        run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
     
     while len(user_input) > 1:
@@ -211,16 +212,16 @@ def edit_profile(user_input, profile, path, friendly=True):
             try:
                 index = int(user_input[1])
                 if not profile.del_post(index):
-                    run_error(friendly=friendly)
+                    run_error("INVALID INDEX", friendly=friendly)
                     return None
                 profile.save_profile(path)
                 user_input = user_input[2:]
             except ValueError:
-                run_error(friendly=friendly)
+                run_error("INVALID INDEX", friendly=friendly)
                 return None
         
         else:
-            run_error(friendly=friendly)
+            run_error("INVALID COMMAND (E)", friendly=friendly)
             return None
     return None
 
@@ -238,11 +239,11 @@ def print_profile(user_input, profile, friendly=True):
         return None
 
     if profile is None:
-        run_error(friendly=friendly)
+        run_error("PROFILE ERROR", friendly=friendly)
         return None
 
     if len(user_input) < 1:
-        run_error(friendly=friendly)
+        run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
     
     while len(user_input) > 0:
@@ -278,13 +279,13 @@ def print_profile(user_input, profile, friendly=True):
             posts = profile.get_posts()
             post = posts[index] if 0 <= index < len(posts) else None
             if post is None:
-                run_error(friendly=friendly)
+                run_error("INVALID INDEX", friendly=friendly)
                 return None
             print(f"Post {index}: {post.entry} (timestamp: {post.timestamp})")
             user_input = user_input[2:]
 
         else:
-            run_error(friendly=friendly)
+            run_error("INVALID COMMAND (P)", friendly=friendly)
             return None
 
 def help():
@@ -390,12 +391,11 @@ def main_ui(start):
                     profile = p.Profile()
                     profile.load_profile(str(file_path))
                 except Exception:
-                    run_error()
+                    run_error("PROFILE ERROR")
                     continue
             print(f"Profile for {name} created and saved successfully.")
             print()
             print("Now that you have a profile, you can use any of the following actions:")
-            print()
             break
         elif ans[0] == "load":
             name = input("Enter the name of the profile you would like to load (without .dsu extension): ")
@@ -407,7 +407,6 @@ def main_ui(start):
                 print(f"Profile '{name}' loaded successfully.")
                 print()
                 print("Now that you have loaded your profile, you can use any of the following actions:")
-                print()
                 break
         else:
             ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: "))
@@ -430,26 +429,30 @@ def main_ui(start):
         elif ans.lower() == "c":
             name = input("What name would you like to give the profile? (without .dsu extension): ")
             file_path = input("Where would you like to save the profile? (Enter the directory path): ")
+            if not name or not file_path:
+                run_error("INPUT NUMBER ERROR")
+                continue
             ans = [file_path, "-n", name]
             result = create_file(ans)
             if result is None:
-                run_error()
-                return None
+                continue
         
             print(f"Enter the following information to create the profile '{name}':")
             file_path, exists = result
             if not exists:
                 profile = create_profile()
+                if profile is None:
+                    delete_file([str(file_path)])
+                    continue
                 profile.save_profile(str(file_path))
             if exists:
                 try:
                     profile = p.Profile()
                     profile.load_profile(str(file_path))
                 except Exception:
-                    run_error()
-                    return None
+                    run_error("PROFILE ERROR")
+                    continue
             print(f"Profile for {name} created and saved successfully.")
-            print()
         elif ans.lower() == "o":
             name = input("Enter the name of the profile you would like to load (without .dsu extension): ")
             file_path = input("Enter the directory path where the profile is located: ")
