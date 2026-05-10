@@ -27,6 +27,8 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
         "PATH ERROR": "Path Error. Ensure that the file path you provided is valid and that you have the necessary permissions to access it.",
         "FILE ERROR": "File Error. Ensure that the file you are trying to access exists and is a valid .dsu file.",
         "PROFILE ERROR": "Profile Error. Ensure that the profile you are trying to access is valid and that you have the necessary permissions to access it.",
+        "INVALID USR/PWD": "Invalid Username or Password. Usernames and passwords cannot contain spaces.",
+        "EMPTY PARAM": "Empty Parameter. Each profile must have a non-empty DsuServer, Username, and Password.",
     }
 
     if error_type in messages:
@@ -36,6 +38,7 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
 
 
 def create_file(user_input, friendly=True):
+
     if len(user_input) != 3 or user_input[1] != "-n":
         run_error("INPUT NUMBER ERROR", friendly=friendly)
         return None
@@ -131,6 +134,13 @@ def create_profile(friendly=True):
     username = input("Username: ")
     password = input("Password: ")
     bio = input("Bio: ")
+
+    if " " in username or " " in password:
+        run_error("INVALID USR/PWD", friendly=friendly)
+        return None
+    if not dsuserver or not username or not password:
+        run_error("EMPTY PARAM", friendly=friendly)
+        return None
 
     profile = p.Profile(dsuserver, username, password)
     profile.bio = bio
@@ -359,16 +369,21 @@ def main_ui(start):
         if ans[0] == "new":
             name = input("What name would you like to give the profile? (without .dsu extension): ")
             file_path = input("Where would you like to save the profile? (Enter the directory path): ")
+            if not name or not file_path:
+                run_error("INPUT NUMBER ERROR")
+                continue
             ans = [file_path, "-n", name]
             result = create_file(ans)
             if result is None:
-                run_error()
-                return None
+                continue
         
             print(f"Enter the following information to create the profile '{name}':")
             file_path, exists = result
             if not exists:
                 profile = create_profile()
+                if profile is None:
+                    delete_file([str(file_path)])
+                    continue
                 profile.save_profile(str(file_path))
             if exists:
                 try:
@@ -376,12 +391,24 @@ def main_ui(start):
                     profile.load_profile(str(file_path))
                 except Exception:
                     run_error()
-                    return None
+                    continue
             print(f"Profile for {name} created and saved successfully.")
             print()
             print("Now that you have a profile, you can use any of the following actions:")
             print()
             break
+        elif ans[0] == "load":
+            name = input("Enter the name of the profile you would like to load (without .dsu extension): ")
+            file_path = input("Enter the directory path where the profile is located: ")
+            ans = [file_path + "/" + name + ".dsu"]
+            result = open_file(ans)
+            if result is not None:
+                profile, file_path = result
+                print(f"Profile '{name}' loaded successfully.")
+                print()
+                print("Now that you have loaded your profile, you can use any of the following actions:")
+                print()
+                break
         else:
             ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: "))
     
