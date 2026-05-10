@@ -14,12 +14,28 @@ from pathlib import Path
 from shlex import split as parse
 
 
-def run_error():
-    print("ERROR")
-    return None
+def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
+    if not friendly:
+        print("ERROR")
+        return None
+    
+    messages = {
+        "INVALID COMMAND": "Invalid command. Use 'C' to create a file, 'D' to delete a file, 'R' to read a file, 'O' to open a file, 'E' to edit a profile, and 'P' to print profile information.",
+        "INVALID COMMAND (E)": "Invalid edit command. Use '-usr' to edit username, '-pwd' to edit password, '-bio' to edit bio, '-addpost' to add a post, and '-delpost' to delete a post.",
+        "INVALID COMMAND (P)": "Invalid print command. Use '-all' to print all profile information, '-usr' to print username, '-pwd' to print password, '-bio' to print bio, '-posts' to print all posts, and '-post <index>' to print a specific post.",
+        "INPUT NUMBER ERROR": "Input number error. Ensure that you are providing the correct number of arguments for the command.",
+        "PATH ERROR": "Path error. Ensure that the file path you provided is valid and that you have the necessary permissions to access it.",
+        "FILE ERROR": "File error. Ensure that the file you are trying to access exists and is a valid .dsu file.",
+        "PROFILE ERROR": "Profile error. Ensure that the profile you are trying to access is valid and that you have the necessary permissions to access it.",
+    }
+
+    if error_type in messages:
+        print(f"{messages[error_type]} Check your input and try again.")
+    else:
+        print("UNKNOWN EXCEPTION: An unknown error occurred.")
 
 
-def create_file(user_input):
+def create_file(user_input, friendly=True):
     if len(user_input) != 3 or user_input[1] != "-n":
         run_error()
         return None
@@ -42,7 +58,7 @@ def create_file(user_input):
     return file_path, False
 
 
-def delete_file(user_input):
+def delete_file(user_input, friendly=True):
     if len(user_input) != 1:
         run_error()
         return None
@@ -59,7 +75,7 @@ def delete_file(user_input):
     return None
 
 
-def read_file(user_input):
+def read_file(user_input, friendly=True):
     if len(user_input) != 1:
         run_error()
         return None
@@ -80,7 +96,7 @@ def read_file(user_input):
     return None
 
 
-def open_file(user_input):
+def open_file(user_input, friendly=True):
     if len(user_input) != 1:
         run_error()
         return None
@@ -122,7 +138,7 @@ def create_profile():
     return profile
 
 
-def check_profile(profile):
+def check_profile(profile, friendly=True):
 
     if profile is None:
         run_error()
@@ -139,7 +155,7 @@ def check_profile(profile):
         return False
     
 
-def edit_profile(user_input, profile, path):
+def edit_profile(user_input, profile, path, friendly=True):
     
     #commands = ["-usr", "-pwd", "-bio", "-addpost", "-delpost"]
 
@@ -188,7 +204,7 @@ def edit_profile(user_input, profile, path):
     return None
 
 
-def print_profile(user_input, profile):
+def print_profile(user_input, profile, friendly=True):
 
     if profile is None:
         run_error()
@@ -250,11 +266,11 @@ def admin_mode():
         try:
             ans = parse(input('Enter a command (Q to quit): '))
         except Exception:
-            run_error()
+            run_error(friendly=False)
             continue
 
         if not ans:
-            run_error()
+            run_error(friendly=False)
             continue
         if ans[0].lower() == "q":
             break
@@ -272,7 +288,7 @@ def admin_mode():
                     profile = p.Profile()
                     profile.load_profile(str(file_path))
                 except Exception:
-                    run_error()
+                    run_error(friendly=False)
                 
         elif ans[0] == "D":
             delete_file(ans[1:])
@@ -289,13 +305,13 @@ def admin_mode():
             try:
                 edit_profile(ans[1:], profile, file_path)
             except Exception as e:
-                run_error()
+                run_error(friendly=False)
 
         elif ans[0] == "P":
             print_profile(ans[1:], profile)
             
         else:
-            run_error()
+            run_error(friendly=False)
 
     return None
 
