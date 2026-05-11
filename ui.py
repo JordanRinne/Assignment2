@@ -670,5 +670,4 @@ def main_ui(start):
                 continue
         else:
             run_error("INVALID COMMAND")
-
     return None
