@@ -14,17 +14,33 @@ def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
         return None
 
     messages = {
-        "INVALID COMMAND": "Invalid Command. Use 'C' to create a file, 'D' to delete a file, 'R' to read a file, 'O' to open a file, 'E' to edit a profile, or 'P' to print profile information.",
-        "INVALID COMMAND (E)": "Invalid Edit Command. Use '-usr' to edit username, '-pwd' to edit password, '-bio' to edit bio, '-addpost' to add a post, or '-delpost' to delete a post.",
-        "INVALID COMMAND (P)": "Invalid Print Command. Use '-all' to print all profile information, '-usr' to print username, '-pwd' to print password, '-bio' to print bio, '-posts' to print all posts, or '-post <index>' to print a specific post.",
-        "INPUT NUMBER ERROR": "Input Number Error. Ensure that you are providing the correct number of arguments for the command.",
-        "PATH ERROR": "Path Error. Ensure that the file path you provided is valid and that you have the necessary permissions to access it.",
-        "FILE ERROR": "File Error. Ensure that the file you are trying to access exists and is a valid .dsu file.",
-        "PROFILE ERROR": "Profile Error. Ensure that the profile you are trying to access is valid and that you have the necessary permissions to access it.",
-        "INVALID USR/PWD": "Invalid Username or Password. Usernames and passwords cannot contain spaces.",
-        "EMPTY PARAM": "Empty Parameter. Each profile must have a non-empty DsuServer, Username, and Password.",
-        "INVALID INDEX": "Invalid Index. Ensure that the index you provided is a valid integer and corresponds to an existing post.",
-        "EMPTY FILE": "Empty File. The file you are trying to open is empty and cannot be loaded as a profile."
+        "INVALID COMMAND": "Invalid Command. Use 'C' to create a file,"
+        " 'D' to delete a file, 'R' to read a file, 'O' to open a file,"
+        " 'E' to edit a profile, or 'P' to print profile information.",
+        "INVALID COMMAND (E)": "Invalid Edit Command. Use '-usr' to edit"
+        " username, '-pwd' to edit password, '-bio' to edit bio,"
+        " '-addpost' to add a post, or '-delpost' to delete a post.",
+        "INVALID COMMAND (P)": "Invalid Print Command. Use '-all'"
+        " to print all profile information, '-usr' to print username,"
+        " '-pwd' to print password, '-bio' to print bio, '-posts'"
+        " to print all posts, or '-post <index>' to print a specific post.",
+        "INPUT NUMBER ERROR": "Input Number Error. Ensure that you are"
+        " providing the correct number of arguments for the command.",
+        "PATH ERROR": "Path Error. Ensure that the file path you provided"
+        " is valid and that you have the necessary permissions to access it.",
+        "FILE ERROR": "File Could Not Be Found. Ensure that the file you are"
+        " trying to access exists and is a valid .dsu file.",
+        "PROFILE ERROR": "Profile Error. Ensure that the profile you are"
+        " trying to access is valid and that you have the necessary"
+        " permissions to access it.",
+        "INVALID USR/PWD": "Invalid Username or Password. Usernames"
+        " and Passwords cannot contain spaces.",
+        "EMPTY PARAM": "Empty Parameter. Each profile must have"
+        " a non-empty DsuServer, Username, and Password.",
+        "INVALID INDEX": "Invalid Index. Ensure that the index you provided"
+        " is a valid integer and corresponds to an existing post.",
+        "EMPTY FILE": "Empty File. The file you are trying to open is empty"
+        " and cannot be loaded as a profile."
     }
 
     if error_type in messages:
@@ -167,8 +183,14 @@ def edit_profile(user_input, profile, path, friendly=True):
         print("-usr <new_username>: Edit the username of the profile.")
         print("-pwd <new_password>: Edit the password of the profile.")
         print("-bio <new_bio>: Edit the bio of the profile.")
-        print("-addpost <post_entry>: Add a new post with the specified entry to the profile.")
-        print("-delpost <post_index>: Delete the post at the specified index from the profile.")
+        print(
+            "-addpost <post_entry>: Add a new post with the specified"
+            " entry to the profile."
+        )
+        print(
+            "-delpost <post_index>: Delete the post at the specified"
+            " index from the profile."
+        )
         return None
 
     if profile is None:
@@ -224,12 +246,18 @@ def print_profile(user_input, profile, friendly=True):
 
     if user_input == ["help"]:
         print("Available print commands:")
-        print("-all: Print all profile information, including username, password, bio, and all posts.")
+        print(
+            "-all: Print all profile information, including username,"
+            " password, bio, and all posts."
+        )
         print("-usr: Print the username of the profile.")
         print("-pwd: Print the password of the profile.")
         print("-bio: Print the bio of the profile.")
         print("-posts: Print all posts in the profile.")
-        print("-post <index>: Print the post at the specified index in the profile.")
+        print(
+            "-post <index>: Print the post at the specified index in"
+            " the profile."
+        )
         return None
 
     if profile is None:
@@ -268,7 +296,11 @@ def print_profile(user_input, profile, friendly=True):
                 print(f"Post {i}: {post.entry} (timestamp: {post.timestamp})")
             user_input = user_input[1:]
 
-        elif user_input[0] == "-post" and len(user_input) >= 2 and user_input[1].isdigit():
+        elif (
+            user_input[0] == "-post"
+            and len(user_input) >= 2
+            and user_input[1].isdigit()
+        ):
             index = int(user_input[1])
             posts = profile.get_posts()
             post = posts[index] if 0 <= index < len(posts) else None
@@ -282,14 +314,31 @@ def print_profile(user_input, profile, friendly=True):
             run_error("INVALID COMMAND (P)", friendly=friendly)
             return None
 
+
 def print_help():
     print("Available commands:")
-    print("C <directory> -n <filename>: Create a new .dsu file in the specified directory with the specified filename.")
+    print(
+        "C <directory> -n <filename>: Create a new .dsu file in the"
+        " specified directory with the specified filename."
+    )
     print("D <filename.dsu>: Delete the specified .dsu file.")
-    print("R <filename.dsu>: Read and display the contents of the specified .dsu file.")
-    print("O <filename.dsu>: Open the specified .dsu file and load its contents into a profile.")
-    print("E <edit commands>: Edit the currently loaded profile using the specified edit commands. Enter 'E help' for a list of edit commands.")
-    print("P <print commands>: Print information from the currently loaded profile using the specified print commands. Enter 'P help' for a list of print commands.")
+    print(
+        "R <filename.dsu>: Read and display the contents of the"
+        " specified .dsu file."
+    )
+    print(
+        "O <filename.dsu>: Open the specified .dsu file and load"
+        " its contents into a profile."
+    )
+    print(
+        "E <edit commands>: Edit the currently loaded profile using the"
+        " specified edit commands. Enter 'E help' for a list of edit commands."
+    )
+    print(
+        "P <print commands>: Print information from the currently loaded"
+        " profile using the specified print commands. Enter 'P help' for"
+        " a list of print commands."
+    )
     print("Q: Quit the program.")
     return None
 
@@ -367,11 +416,20 @@ def main_ui(start):
 
     while True:
         if not ans:
-            ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile (or Q to quit): "))
+            ans = parse(input(
+                "Enter 'new' to create a new profile or"
+                " 'load' to load an existing profile (or Q to quit): "
+            ))
             continue
         if ans[0] == "new":
-            name = input("What name would you like to give the profile? (without .dsu extension): ")
-            file_path = input("Where would you like to save the profile? (Enter the directory path): ")
+            name = input(
+                "What name would you like to give"
+                " the profile? (without .dsu extension): "
+            )
+            file_path = input(
+                "Where would you like to save the"
+                " profile? (Enter the directory path): "
+            )
             if not name or not file_path:
                 run_error("INPUT NUMBER ERROR")
                 continue
@@ -380,7 +438,10 @@ def main_ui(start):
             if result is None:
                 continue
 
-            print(f"Enter the following information to create the profile '{name}':")
+            print(
+                "Enter the following information"
+                f"to create the profile '{name}':"
+            )
             file_path, exists = result
             if not exists:
                 profile = create_profile()
@@ -397,25 +458,40 @@ def main_ui(start):
                     continue
             print(f"Profile for {name} created and saved successfully.")
             print()
-            print("Now that you have a profile, you can use any of the following actions:")
+            print(
+                "Now that you have a profile, you can"
+                " use any of the following actions:"
+            )
             break
         elif ans[0] == "load":
-            name = input("Enter the name of the profile you would like to load (without .dsu extension): ")
-            file_path = input("Enter the directory path where the profile is located: ")
+            name = input(
+                "Enter the name of the profile you would like"
+                " to load (without .dsu extension): "
+            )
+            file_path = input(
+                "Enter the directory path where"
+                " the profile is located: "
+            )
             ans = [file_path + "/" + name + ".dsu"]
             result = open_file(ans)
             if result is not None:
                 profile, file_path = result
                 print(f"Profile '{name}' loaded successfully.")
                 print()
-                print("Now that you have loaded your profile, you can use any of the following actions:")
+                print(
+                    "Now that you have loaded your profile, you can"
+                    " use any of the following actions:"
+                )
                 break
         elif ans[0].lower() == "q":
             print()
             quit = True
             return None
         else:
-            ans = parse(input("Enter 'new' to create a new profile or 'load' to load an existing profile: (or Q to quit): "))
+            ans = parse(input(
+                "Enter 'new' to create a new profile or 'load' to load"
+                " an existing profile: (or Q to quit): "
+            ))
 
     while True and not quit:
         print()
@@ -428,13 +504,19 @@ def main_ui(start):
         print("Quit the program (type Q)")
         print()
         ans = input("What would you like to do? ")
+        print()
 
         if ans.lower() == "q":
-            print()
             break
         elif ans.lower() == "c":
-            name = input("What name would you like to give the profile? (without .dsu extension): ")
-            file_path = input("Where would you like to save the profile? (Enter the directory path): ")
+            name = input(
+                "What name would you like to give the profile?"
+                " (without .dsu extension): "
+            )
+            file_path = input(
+                "Where would you like to save the profile?"
+                " (Enter the directory path): "
+            )
             if not name or not file_path:
                 run_error("INPUT NUMBER ERROR")
                 continue
@@ -443,7 +525,10 @@ def main_ui(start):
             if result is None:
                 continue
 
-            print(f"Enter the following information to create the profile '{name}':")
+            print(
+                "Enter the following information"
+                f" to create the profile '{name}': "
+            )
             file_path, exists = result
             if not exists:
                 profile = create_profile()
@@ -459,28 +544,48 @@ def main_ui(start):
                     run_error("PROFILE ERROR")
                     continue
             print(f"Profile for {name} created and saved successfully.")
+
         elif ans.lower() == "o":
-            name = input("Enter the name of the profile you would like to load (without .dsu extension): ")
-            file_path = input("Enter the directory path where the profile is located: ")
+            name = input(
+                "Enter the name of the profile you would like to load"
+                " (without .dsu extension): "
+            )
+            file_path = input(
+                "Enter the directory path where the profile is located: "
+            )
             ans = [file_path + "/" + name + ".dsu"]
             result = open_file(ans)
             if result is not None:
                 profile, file_path = result
                 print(f"Profile '{name}' loaded successfully.")
-                print()
 
         elif ans.lower() == "d":
-            name = input("Enter the name of the profile you would like to delete (without .dsu extension): ")
-            file_path = input("Enter the directory path where the profile is located: ")
+            name = input(
+                "Enter the name of the profile you would like to delete"
+                " (without .dsu extension): "
+            )
+            file_path = input(
+                "Enter the directory path where the profile is located: "
+            )
             ans = [file_path + "/" + name + ".dsu"]
             delete_file(ans)
+
         elif ans.lower() == "r":
-            name = input("Enter the name of the profile you would like to read (without .dsu extension): ")
-            file_path = input("Enter the directory path where the profile is located: ")
+            name = input(
+                "Enter the name of the profile you would like to read"
+                " (without .dsu extension): "
+            )
+            file_path = input(
+                "Enter the directory path where the profile is located: "
+            )
             ans = [file_path + "/" + name + ".dsu"]
             read_file(ans)
+
         elif ans.lower() == "e":
-            edit_command = input("Enter an edit command (type 'E help' for a list of possible commands): ")
+            edit_command = input(
+                "Enter an edit command (type 'E help'"
+                " for a list of possible commands): "
+            )
             if not edit_command:
                 run_error("INPUT NUMBER ERROR")
                 continue
@@ -489,7 +594,9 @@ def main_ui(start):
                 edit_profile(["help"], profile, file_path)
                 continue
             if edit_command == "-delpost":
-                index_str = input("Enter the index of the post you would like to delete: ")
+                index_str = input(
+                    "Enter the index of the post you would like to delete: "
+                )
                 if index_str.isdigit():
                     edit_profile(["-delpost", index_str], profile, file_path)
                 else:
@@ -503,7 +610,10 @@ def main_ui(start):
             print("Use the P command to view any updated profile information.")
 
         elif ans.lower() == "p":
-            print_command = input("Enter a print command (type 'P help' for a list of possible commands): ")
+            print_command = input(
+                "Enter a print command (type 'P help'"
+                " for a list of possible commands): "
+            )
             if not print_command:
                 run_error("INPUT NUMBER ERROR")
                 continue
