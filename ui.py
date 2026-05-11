@@ -203,12 +203,18 @@ def edit_profile(user_input, profile, path, friendly=True):
 
     while len(user_input) > 1:
 
-        if user_input[0] == "-usr" and " " not in user_input[1]:
+        if user_input[0] == "-usr":
+            if " " in user_input[1]:
+                run_error("INVALID USR/PWD", friendly=friendly)
+                return None
             profile.username = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
 
-        elif user_input[0] == "-pwd" and " " not in user_input[1]:
+        elif user_input[0] == "-pwd":
+            if " " in user_input[1]:
+                run_error("INVALID USR/PWD", friendly=friendly)
+                return None
             profile.password = user_input[1]
             profile.save_profile(path)
             user_input = user_input[2:]
@@ -416,20 +422,24 @@ def main_ui(start):
 
     while True:
         if not ans:
+            print()
             ans = parse(input(
                 "Enter 'new' to create a new profile or"
                 " 'load' to load an existing profile (or Q to quit): "
             ))
             continue
         if ans[0] == "new":
+            print()
             name = input(
                 "What name would you like to give"
                 " the profile? (without .dsu extension): "
             )
+            print()
             file_path = input(
                 "Where would you like to save the"
                 " profile? (Enter the directory path): "
             )
+            print()
             if not name or not file_path:
                 run_error("INPUT NUMBER ERROR")
                 continue
@@ -437,7 +447,7 @@ def main_ui(start):
             result = create_file(ans)
             if result is None:
                 continue
-
+            print()
             print(
                 "Enter the following information"
                 f"to create the profile '{name}':"
@@ -463,15 +473,18 @@ def main_ui(start):
                 " use any of the following actions:"
             )
             break
-        elif ans[0] == "load":
+        elif ans[0] == "open":
+            print()
             name = input(
                 "Enter the name of the profile you would like"
-                " to load (without .dsu extension): "
+                " to open (without .dsu extension): "
             )
+            print()
             file_path = input(
                 "Enter the directory path where"
                 " the profile is located: "
             )
+            print()
             ans = [file_path + "/" + name + ".dsu"]
             result = open_file(ans)
             if result is not None:
@@ -488,8 +501,9 @@ def main_ui(start):
             quit = True
             return None
         else:
+            print()
             ans = parse(input(
-                "Enter 'new' to create a new profile or 'load' to load"
+                "Enter 'new' to create a new profile or 'open' to load"
                 " an existing profile: (or Q to quit): "
             ))
 
@@ -607,7 +621,6 @@ def main_ui(start):
                 continue
             edit_input = input("Enter the new Profile information: ")
             edit_profile([edit_command, edit_input], profile, file_path)
-            print("Use the P command to view any updated profile information.")
 
         elif ans.lower() == "p":
             print_command = input(

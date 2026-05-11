@@ -6,11 +6,12 @@ import ui
 
 
 def main():
-
+    print()
     print("Welcome to the DSU Profile Manager!")
+    print()
     start = input(
         "To get started, would you like to create a new profile "
-        "or load an existing one? (new/load): "
+        "or open an existing one? (new/open): "
     ).strip().lower()
 
     if start == "admin":
