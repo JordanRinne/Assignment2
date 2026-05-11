@@ -157,13 +157,13 @@ def create_profile(friendly=True):
         password = input("Password: ")
         bio = input("Bio (optional): ")
     else:
-        print("DsuServer")
+        print("DsuServer:")
         dsuserver = input()
-        print("Username")
+        print("Username:")
         username = input()
-        print("Password")
+        print("Password:")
         password = input()
-        print("Bio")
+        print("Bio:")
         bio = input()
 
     if " " in username or " " in password:
@@ -432,8 +432,6 @@ def admin_mode():
 
         else:
             run_error(friendly=False)
-
-    print("EXITED SUCCESSFULLY")
     return None
 
 
