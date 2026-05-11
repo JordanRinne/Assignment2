@@ -5,7 +5,15 @@
 
 import Profile as p
 from pathlib import Path
-from shlex import split as parse
+import shlex
+
+
+def parse(user_input):
+    lexer = shlex.shlex(user_input, posix=True)
+    lexer.whitespace_split = True
+    lexer.commenters = ""
+    lexer.escape = ""
+    return list(lexer)
 
 
 def run_error(error_type="UNKNOWN EXCEPTION", friendly=True):
@@ -58,6 +66,7 @@ def create_file(user_input, friendly=True):
     filename = user_input[2]
     file_path = Path(directory).expanduser() / f"{filename}.dsu"
     if file_path.exists():
+        print(f"{file_path} OPENED")
         return file_path, True
 
     try:
@@ -498,7 +507,7 @@ def main_ui(start):
                 " the profile is located: "
             )
             print()
-            ans = [file_path + "/" + name + ".dsu"]
+            ans = [str(Path(file_path).expanduser() / f"{name}.dsu")]
             result = open_file(ans)
             if result is not None:
                 profile, file_path = result
@@ -580,7 +589,7 @@ def main_ui(start):
             file_path = input(
                 "Enter the directory path where the profile is located: "
             )
-            ans = [file_path + "/" + name + ".dsu"]
+            ans = [str(Path(file_path).expanduser() / f"{name}.dsu")]
             result = open_file(ans)
             if result is not None:
                 profile, file_path = result
@@ -594,7 +603,7 @@ def main_ui(start):
             file_path = input(
                 "Enter the directory path where the profile is located: "
             )
-            ans = [file_path + "/" + name + ".dsu"]
+            ans = [str(Path(file_path).expanduser() / f"{name}.dsu")]
             delete_file(ans)
 
         elif ans.lower() == "r":
@@ -605,7 +614,7 @@ def main_ui(start):
             file_path = input(
                 "Enter the directory path where the profile is located: "
             )
-            ans = [file_path + "/" + name + ".dsu"]
+            ans = [str(Path(file_path).expanduser() / f"{name}.dsu")]
             read_file(ans)
 
         elif ans.lower() == "e":
