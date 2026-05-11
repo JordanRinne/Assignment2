@@ -142,10 +142,20 @@ def open_file(user_input, friendly=True):
 
 def create_profile(friendly=True):
 
-    dsuserver = input("DsuServer: ")
-    username = input("Username: ")
-    password = input("Password: ")
-    bio = input("Bio: ")
+    if friendly:
+        dsuserver = input("DsuServer: ")
+        username = input("Username: ")
+        password = input("Password: ")
+        bio = input("Bio (optional): ")
+    else:
+        print("DsuServer")
+        dsuserver = input()
+        print("Username")
+        username = input()
+        print("Password")
+        password = input()
+        print("Bio")
+        bio = input()
 
     if " " in username or " " in password:
         run_error("INVALID USR/PWD", friendly=friendly)
@@ -245,6 +255,9 @@ def edit_profile(user_input, profile, path, friendly=True):
         else:
             run_error("INVALID COMMAND (E)", friendly=friendly)
             return None
+    if len(user_input) == 1:
+        run_error("INPUT NUMBER ERROR", friendly=friendly)
+        return None
     return None
 
 
